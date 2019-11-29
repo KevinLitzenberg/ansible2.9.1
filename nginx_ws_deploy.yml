@@ -1,0 +1,5 @@
+---
+- hosts: devAnsibleBase
+  remote_user: vagrant
+  roles:
+    - role: nginxinc.nginx
