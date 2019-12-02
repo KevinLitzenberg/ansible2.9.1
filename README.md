@@ -27,6 +27,10 @@ Python3.7.5
       
   * inventory.json uses hostvar 'target_user' to plug into playbooks.
 
+5. Install the ansible-galaxy nginx role.
+> ansible-galaxy install nginxinc.nginx
+See requirements.yml for speific version install.  
+> - nginxinc.nginx, 0.12.0
 
 Playbooks
 
