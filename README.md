@@ -17,3 +17,25 @@ Python3.7.5
 
 3. Update the ansible.cfg to reflect any local chnages that may need updating.I.E. /home/your_user_name
 
+4. Set up inventory/inventory.json.  
+  * inventory used the .ini style for hosts, and host_groups
+  * inventory depends on a properly configured .ssh/config such as:
+      Host hostname/ip_address
+      user host_user_name
+      Port port_numbe
+      IdentityFile path_to_private_key
+      
+  * inventory.json uses hostvar 'target_user' to plug into playbooks.
+
+5. Install the ansible-galaxy nginx role.
+> ansible-galaxy install nginxinc.nginx
+See requirements.yml for speific version install.  
+> - nginxinc.nginx, 0.12.0
+
+Playbooks
+
+nginx_ws_deploy.yml deploys a basic nginx webserver utilzing the nginx_demo website.  The base install is a single webserver in /usr/share/nginx/html/demo-index.html
+
+   * to run the playbook speicfy the hostname ustilizing the --extra-vars modifier.
+   > ansible-playbook nginx_ws_deploy.yml --extra-vars "target_host=some_host_to_provision"
+

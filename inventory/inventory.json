@@ -1,18 +1,26 @@
-[expensify_lb]
-expensify1 ansible_host=34.221.73.80 ansible_user=ubuntu  ansible_ssh_private_key_file=/home/developer/.ssh/id_rsa
+[prod_lb]
+prod_lb01 target_user=ubuntu
 
-[expensify_nginx]
-expensify2 ansible_host=34.222.15.43 ansible_user=ubuntu ansible_ssh_private_key_file=/home/developer/.ssh/id_rsa 
-expensify3 ansible_host=34.221.219.49 ansible_user=ubuntu ansible_ssh_private_key_file=/home/developer/.ssh/id_rsa
+[prod_nginx]
+prod_nginx01 target_user=ubuntu
+prod_nginx02 target_user=ubuntu
 
-[expensify_nagios]
-expensify4 ansible_host=34.222.98.219 ansible_user=ubuntu ansible_ssh_private_key_file=/home/developer/.ssh/id_rsa
+[prod_nagios]
+prod_nagios01 target_user=ubuntu
 
-[expensify_test]
-devAnsibleBase ansible_host=127.0.0.1 ansible_user=vagrant ansible_port=2222 ansible_ssh_private_key_file=/home/developer/Vagrant/Ubuntu16.04/.vagrant/machines/default/virtualbox/private_key
+[stage_test]
+devAnsibleBase target_user=vagrant
 
-[expensify:children]
-expensify_lb
-expensify_nginx
-expensify_nagios
-expensify_test
+
+[aws_ws_nginx]
+aws_ws_nginx01 target_user=ubuntu
+aws_ws_nginx02 target_user=ubuntu
+
+[prod:children]
+prod_lb
+prod_nginx
+prod_nagios
+stage_test
+
+[aws_stage:children]
+aws_ws_nginx
