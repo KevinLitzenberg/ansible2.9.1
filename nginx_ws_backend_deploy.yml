@@ -19,8 +19,9 @@
         template_file: http/default.conf.j2
         conf_file_name: default.conf
         conf_file_location: /etc/nginx/conf.d/
-        port: "{{ ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0]) }}:80"
-        server_name: web_server
+        port: "{{ ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0]) }}:{{target_lb_port }}"
+        #port:  "{{ ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0]) }}:80"
+        server_name: backend_server
         web_server_name: "{{ ansible_facts['hostname'] }}" 
         error_page: /usr/share/nginx/html
         autoindex: false
