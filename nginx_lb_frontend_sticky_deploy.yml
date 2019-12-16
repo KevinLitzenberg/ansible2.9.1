@@ -2,6 +2,7 @@
 - hosts: "{{ target_host }}"
   remote_user: "{{ target_user }}"
   become: true
+  gather_facts: True
   roles:
     - role: nginxinc.nginx
   vars:
@@ -25,7 +26,6 @@
         keyval: false
       stream_enable: false
       http_global_autoindex: false
-
     nginx_http_template_enable: true
     nginx_http_template:
       default:
@@ -37,7 +37,7 @@
 
         reverse_proxy:
           locations:
-            backend:
+            stickybackend:
               location: /
               include_files: []
               proxy_hide_headers: [] # A list of headers which shouldn't be passed to the application
@@ -51,7 +51,8 @@
                   #value: Value-X
                   #always: false
               proxy_connect_timeout: null
-              proxy_pass: http://backend_servers
+              error_page: 502 @rrfallback
+              proxy_pass: http://$sticky_backend$uri
               #rewrites:
               # - /foo(.*) /$1 break
               #proxy_pass_request_body: off
@@ -86,15 +87,15 @@
               #proxy_store_acccess: user:rw
               proxy_read_timeout: null
               proxy_send_timeout: null
-              proxy_ssl:
-                cert: /etc/ssl/certs/proxy_default.crt
-                key: /etc/ssl/private/proxy_default.key
-                trusted_cert: /etc/ssl/certs/proxy_ca.crt
-                protocols: TLSv1 TLSv1.1 TLSv1.2
-                ciphers: HIGH:!aNULL:!MD5
-                verify: false
-                verify_depth: 1
-                session_reuse: true
+             #proxy_ssl:
+               #cert: /etc/ssl/certs/proxy_default.crt
+               #key: /etc/ssl/private/proxy_default.key
+               #trusted_cert: /etc/ssl/certs/proxy_ca.crt
+               #protocols: TLSv1 TLSv1.1 TLSv1.2
+               #ciphers: HIGH:!aNULL:!MD5
+               #verify: false
+               #verify_depth: 1
+               #session_reuse: true
               proxy_cache: backend_proxy_cache
               proxy_cache_valid:
                 - code: 200
@@ -130,6 +131,100 @@
                   #code: 302
                   #url: https://sso.somehost.local/?url=https://$http_host$request_uri
               #custom_options: []
+            fallback:
+              location: '@rrfallback'
+              include_files: []
+              proxy_hide_headers: [] # A list of headers which shouldn't be passed to the application
+              add_headers:
+                strict_transport_security:
+                  name: Strict-Transport-Security
+                  value: max-age=15768000; includeSubDomains
+                  always: true
+                #header_name:
+                  #name: Header-X
+                  #value: Value-X
+                  #always: false
+              proxy_connect_timeout: null
+              proxy_pass: http://rrbackend
+              #rewrites:
+              # - /foo(.*) /$1 break
+              #proxy_pass_request_body: off
+              #allows:
+              # - 192.168.1.0/24
+              #denies:
+              # - all
+              proxy_set_header:
+                header_host:
+                  name: Host
+                  value: $host
+                header_x_real_ip:
+                  name: X-Real-IP
+                  value: $remote_addr
+                header_x_forwarded_for:
+                  name: X-Forwarded-For
+                  value: $proxy_add_x_forwarded_for
+                header_x_forwarded_proto:
+                  name: X-Forwarded-Proto
+                  value: $scheme
+                header_upgrade:
+                  name: Upgrade
+                  value: $http_upgrade
+                header_connection:
+                  name: Connection
+                  value: "Upgrade"
+                #header_random:
+                  #name: RandomName
+                  #value: RandomValue
+              #internal: false
+              #proxy_store: off
+              #proxy_store_acccess: user:rw
+              proxy_read_timeout: null
+              proxy_send_timeout: null
+             #proxy_ssl:
+               #cert: /etc/ssl/certs/proxy_default.crt
+               #key: /etc/ssl/private/proxy_default.key
+               #trusted_cert: /etc/ssl/certs/proxy_ca.crt
+               #protocols: TLSv1 TLSv1.1 TLSv1.2
+               #ciphers: HIGH:!aNULL:!MD5
+               #verify: false
+               #verify_depth: 1
+               #session_reuse: true
+              proxy_cache: backend_proxy_cache
+              proxy_cache_valid:
+                - code: 200
+                  time: 10m
+                - code: 301
+                  time: 1m
+              proxy_temp_path:
+                path: /var/cache/nginx/backend/temp
+              proxy_cache_lock: false
+              proxy_cache_min_uses: 3
+              proxy_cache_revalidate: false
+              proxy_cache_use_stale:
+                - http_403
+                - http_404
+              proxy_ignore_headers:
+                - Vary
+                - Cache-Control
+              proxy_cookie_path:
+                path: /web/
+                replacement: /
+              proxy_buffering: false
+              proxy_http_version: 1.1
+              websocket: false
+              auth_basic: null
+              auth_basic_user_file: null
+              #try_files: $uri $uri/index.html $uri.html =404
+              #auth_request: /auth
+              #auth_request_set:
+                #name: $auth_user
+                #value: $upstream_http_x_user
+              #returns:
+                #return302:
+                  #code: 302
+                  #url: https://sso.somehost.local/?url=https://$http_host$request_uri
+              #custom_options: []
+
           health_check_plus: false
         returns:
           return301:
@@ -163,23 +258,33 @@
           proxy_ignore_headers:
             - Expires
  
+        map:
+         #opensource_cookie: 
+           #cookie_backend: $cookie_backend 
+           #sticky_backend: $sticky_backend
+           ##backend_cookie_name:
+           ##  map_default: bad_gateway;
+           ##  backend1: 172.31.37.212
+           ## backend2: 172.32.1.19
+
+
         upstreams:
           upstream1:
-            name: backend_servers
-            lb_method: hash $request_uri consistent
+            name: rrbackend
+            #lb_method: # default to round robin 
             zone_name: backend_cache
             zone_size: 64k
             sticky_cookie: false
             servers:
               backend_server_1:
                 address: "{{ backend1_ip }}"
-                health_check: max_fails=3 fail_timeout=5s
+                health_check:
                 port: 80
                 weight: 1
               backend_server_2:
                 address: "{{ backend2_ip }}"
                 port: 80
                 weight: 1
-                health_check: max_fails=3 fail_timeout=5s
+                health_check:
 
     nginx_cleanup_config: true

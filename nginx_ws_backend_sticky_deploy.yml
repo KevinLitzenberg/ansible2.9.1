@@ -1,6 +1,7 @@
 ---
 - hosts: "{{ target_host }}"
   remote_user: "{{ target_user }}"
+  gather_facts: True
   roles:
     - role: nginxinc.nginx
   vars:
@@ -50,6 +51,9 @@
               location: /
               html_file_location: /usr/share/nginx/html
               html_file_name: demo-index.html
+              #add_header: Set-Cookie backend=backend1
+              add_header: Set-Cookie {{sticky_backend_id }}
+              proxy_set_sticky_header: X-Real-IP $remote_addr
               autoindex: false
           http_demo_conf: true
 

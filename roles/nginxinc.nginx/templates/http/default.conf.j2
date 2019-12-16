@@ -3,8 +3,9 @@
 {% if item.value.upstreams is defined and item.value.upstreams %}
 {% for upstream in item.value.upstreams %}
 upstream {{ item.value.upstreams[upstream].name }} {
-    {{ item.value.upstreams[upstream].lb_method }};
-    zone {{ item.value.upstreams[upstream].zone_name }} {{ item.value.upstreams[upstream].zone_size }};
+  {% if item.value.upstreams[upstream].lb_method is defined %}{{ item.value.upstreams[upstream].lb_method }};
+  {% endif %}
+  zone {{ item.value.upstreams[upstream].zone_name }} {{ item.value.upstreams[upstream].zone_size }};
 {% for server in item.value.upstreams[upstream].servers %}
     server {{ item.value.upstreams[upstream].servers[server].address }}:{{ item.value.upstreams[upstream].servers[server].port }} weight={{ item.value.upstreams[upstream].servers[server].weight|default("1") }} {{ item.value.upstreams[upstream].servers[server].health_check|default("") }};
 {% endfor %}
@@ -14,7 +15,14 @@ upstream {{ item.value.upstreams[upstream].name }} {
 }
 {% endfor %}
 {% endif %}
+{% if item.value.map is defined %}
 
+map $cookie_backend $sticky_backend {
+    default bad_gateway;
+    backend1 {{ backend1_ip }};
+    backend2 {{ backend2_ip }};
+}
+{% endif %}
 {% if item.value.reverse_proxy is defined and item.value.reverse_proxy %}
 {% if item.value.reverse_proxy.proxy_cache_path is defined and item.value.reverse_proxy.proxy_cache_path %}
 {% for proxy_cache_path in item.value.reverse_proxy.proxy_cache_path %}
@@ -122,9 +130,15 @@ server {
 {% if item.value.reverse_proxy.locations[location].proxy_connect_timeout is defined and item.value.reverse_proxy.locations[location].proxy_connect_timeout %}
         proxy_connect_timeout {{ item.value.reverse_proxy.locations[location].proxy_connect_timeout }};
 {% endif %}
+{% if item.value.reverse_proxy.locations[location].error_page is defined %}
+        error_page {{ item.value.reverse_proxy.locations[location].error_page }};
+{% endif %}
         proxy_pass {{ item.value.reverse_proxy.locations[location].proxy_pass }};
 {% if item.value.reverse_proxy.locations[location].proxy_read_timeout is defined and item.value.reverse_proxy.locations[location].proxy_read_timeout %}
         proxy_read_timeout {{ item.value.reverse_proxy.locations[location].proxy_read_timeout }};
+{% endif %}
+{% if item.value.reverse_proxy.locations[location].proxy_http_version is defined %}
+        proxy_http_version {{ item.value.reverse_proxy.locations[location].proxy_http_version }};
 {% endif %}
 {% if item.value.reverse_proxy.locations[location].proxy_pass_request_body is defined %}
         proxy_pass_request_body {{ item.value.reverse_proxy.locations[location].proxy_pass_request_body }};
@@ -143,7 +157,6 @@ server {
 {% if item.value.reverse_proxy.locations[location].try_files is defined %}
         try_files {{ item.value.reverse_proxy.locations[location].try_files }};
 {% endif %}
-
 {% if item.value.reverse_proxy.locations[location].proxy_ssl is defined and item.value.reverse_proxy.locations[location].proxy_ssl %}
 {% if item.value.reverse_proxy.locations[location].proxy_ssl.cert is defined %}
         proxy_ssl_certificate {{ item.value.reverse_proxy.locations[location].proxy_ssl.cert }};
@@ -216,6 +229,12 @@ server {
     location {{ item.value.web_server.locations[location].location }} {
         root   {{ item.value.web_server.locations[location].html_file_location }};
         index  {{ item.value.web_server.locations[location].html_file_name }};
+    {% if item.value.web_server.locations[location].add_header is defined %}
+    add_header {{ item.value.web_server.locations[location].add_header }};
+    {% endif %}
+    {% if item.value.web_server.locations[location].proxy_set_sticky_header is defined %}
+proxy_set_header {{ item.value.web_server.locations[location].proxy_set_sticky_header }};
+    {% endif %}
 {% if item.value.web_server.locations[location].autoindex %}
         autoindex on;
 {% endif %}
@@ -241,6 +260,7 @@ server {
         auth_request {{ item.value.web_server.locations[location].auth_request }};
 {% endif %}
     }
+
 {% endfor %}
 {% if item.value.web_server.http_demo_conf %}
     sub_filter_once off;
