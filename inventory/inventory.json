@@ -2,23 +2,25 @@
 prod_lb01 target_user=ubuntu
 
 [prod_nginx]
-prod_nginx01 target_user=ubuntu target_lb_port=8081
-prod_nginx02 target_user=ubuntu target_lb_port=8082
+prod_nginx01 target_user=ubuntu target_lb_ports=80 sticky_backend_id=backend=backend1
+prod_nginx02 target_user=ubuntu target_lb_ports=80 sticky_backend_id=backend=backend2
 
 [prod_nagios]
 prod_nagios01 target_user=ubuntu
 
 [dev_test]
-devAnsibleBase target_user=vagrant target_lb_port=8888
-devAnsibleBackend target_user=vagrant
+devAnsibleBackend target_user=vagrant target_lb_ports=80 sticky_backend_id=backend=backend1
+devAnsibleBase target_user=vagrant target_lb_ports=60000-65000
 
 
 [aws_ws_nginx_stack1]
-aws_ws_nginx01 target_user=ubuntu target_lb_port=8081
-aws_ws_nginx02 target_user=ubuntu target_lb_port=8082
+aws_ws_nginx01 target_user=ubuntu target_lb_ports=80 sticky_backend_id=backend=backend1
+aws_ws_nginx02 target_user=ubuntu target_lb_ports=80 sticky_backend_id=backend=backend2
 
 [aws_lb_nginx]
-aws_lb_nginx01 target_user=ubuntu
+aws_lb_nginx01 target_user=ubuntu target_lb_ports=60000-65000
+aws_lb_nginx02 target_user=ubuntu target_lb_ports=60000-65000
+
 
 [prod:children]
 prod_lb

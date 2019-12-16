@@ -1,3 +1,7 @@
-# from anisble-galaxy role version 0.12.0 from github
+# from anisble-galaxy nginx role version 0.12.0 from github
 - src https://github.com/nginxinc/ansible-role-nginx
   version: v2.9.0
+
+#from ansible-galaxy role systemd role
+- https://github.com/0x0I/ansible-role-systemd.git
+- version: master
