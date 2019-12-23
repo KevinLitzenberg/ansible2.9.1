@@ -1,35 +1,60 @@
-[prod_lb]
-prod_lb01 target_user=ubuntu
+[prod_lb_group]
+prod_lb target_user=ubuntu
 
-[prod_nginx]
-prod_nginx01 target_user=ubuntu target_lb_ports=80 sticky_backend_id=backend=backend1
-prod_nginx02 target_user=ubuntu target_lb_ports=80 sticky_backend_id=backend=backend2
+[prod_nginx_group]
+prod_nginx01 target_user=ubuntu sticky_backend_id=backend=backend1
+prod_nginx02 target_user=ubuntu sticky_backend_id=backend=backend2
 
-[prod_nagios]
-prod_nagios01 target_user=ubuntu
-
-[dev_test]
-devAnsibleBackend target_user=vagrant target_lb_ports=80 sticky_backend_id=backend=backend1
-devAnsibleBase target_user=vagrant target_lb_ports=60000-65000
-
+[prod_nagios_group]
+prod_nagios target_user=ubuntu
 
 [aws_ws_nginx_stack1]
-aws_ws_nginx01 target_user=ubuntu target_lb_ports=80 sticky_backend_id=backend=backend1
-aws_ws_nginx02 target_user=ubuntu target_lb_ports=80 sticky_backend_id=backend=backend2
+aws_ws_nginx01 target_user=ubuntu sticky_backend_id=backend=backend1
+aws_ws_nginx02 target_user=ubuntu sticky_backend_id=backend=backend2
+
+[aws_nagios]
+aws_nagios01 target_user=ubuntu
 
 [aws_lb_nginx]
-aws_lb_nginx01 target_user=ubuntu target_lb_ports=60000-65000
-aws_lb_nginx02 target_user=ubuntu target_lb_ports=60000-65000
+aws_lb_nginx01 target_user=ubuntu
+#aws_lb_nginx02 target_user=ubuntu
 
+[dev_test_backend]
+devAnsibleBackend target_user=vagrant sticky_backend_id=backend=backend1
 
-[prod:children]
-prod_lb
-prod_nginx
-prod_nagios
+[dev_test_frontend]
+devAnsibleBase target_user=vagrant
 
-[aws_stage:children]
+[prod_all:children]
+prod_lb_group
+prod_nginx_group
+prod_nagios_group
+
+[prod_backend:children]
+prod_nginx_group
+prod_nagios_group
+
+[prod_frontend:children]
+prod_lb_group
+
+[aws_stage_all:children]
 aws_ws_nginx_stack1
 aws_lb_nginx
+aws_nagios
 
-[dev:children]
-dev_test
+[aws_stage_backend:children]
+aws_ws_nginx_stack1
+aws_nagios
+
+[aws_fronted:children]
+aws_lb_nginx
+
+[dev_all:children]
+dev_test_frontend
+dev_test_backend
+
+[dev_backend:children]
+dev_test_backend
+
+[dev_frontend:children]
+dev_test_frontend

@@ -1,0 +1,88 @@
+---
+- hosts: "{{ target_host }}"
+  remote_user: "{{ target_user }}"
+  roles:
+    - role: nginxinc.nginx
+  vars:
+    source_key: roles/nginxinc.nginx/files/conf/unit/default_nginx.service
+    source_sysctl: roles/nginxinc.nginx/files/99-hightraffic-lb-ws.conf 
+    dest_key: /lib/systemd/system/nginx.service
+    dest_sysctl: /etc/sysctl.d/99-hightraffic-lb-ws.conf
+  tasks:
+  
+    # Update the nginx unit file
+    - name: Copy nginx.service file
+      copy:
+       src: "{{ source_key }}"
+       dest: "{{dest_key}}"
+       mode: 755
+       owner: root
+
+    # Reload the systemctl daemon after updating unit file.
+    - name: reload system daemon after changes
+      shell: systemctl daemon-reload
+
+     # Check for changes.  
+    - name: check for sysctl.d changes
+      stat: path=/etc/sysctl.d/99-hightraffic-lb-ws.conf
+      register: sysctl_set
+
+    # Update sysctl with high traffic values.
+    - name: Deploy the sysctl kernel settings
+      copy:
+        src: "{{ source_sysctl }}"
+        dest: "{{ dest_sysctl }}"
+        mode: 0644
+
+    # Reload sysctl when 99-hightraffic-lb-ws.conf has changed
+    - name: reload settings from all system configuration files
+      shell: sysctl --system
+     # when: sysctl_set.changed
+
+    # Check for changes.  
+    - name: check /etc/security/limits.conf
+      stat: path=/etc/security/limits.conf
+      register: limits_set_contents
+
+    # Ajust the nginx user file open limits for a load balancer
+    - name: configure system settings, file descriptors and number of threads
+      pam_limits:
+        domain: nginx
+        limit_type: "{{item.limit_type}}"
+        limit_item: "{{item.limit_item}}"
+        value: "{{item.value}}"
+      with_items:
+        - { limit_type: '-', limit_item: 'nofile', value: 65536 }
+        - { limit_type: '-', limit_item: 'nproc', value: 65536 }
+        - { limit_type: 'soft', limit_item: 'memlock', value: unlimited }
+        - { limit_type: 'hard', limit_item: 'memlock', value: unlimited }
+
+    - name: reload settings from all system configuration files
+      shell: sysctl --system
+    #  when: limits_set_contents.changed
+
+    # Check for the existance of upstreams.conf
+    - name: Check for upstreams.conf
+      stat:
+        path: /etc/nginx/conf.d/upstreams.conf
+      register: stat_result
+
+
+    # Remove the installation listening port in upstream.conf
+    - name: Remove the  upstream.conf installation port
+      lineinfile: dest=/etc/nginx/conf.d/upstreams.conf
+                  regexp='^    listen {{ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0])}}:{{ lb_installation_port }};' state=absent
+      when: stat_result.stat.exists == true
+
+    # Add the listenting production port in upstream.conf
+    - name: Update the upstream.conf production ports
+      lineinfile: dest=/etc/nginx/conf.d/upstreams.conf
+                  line='    listen {{ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0])}}:{{lb_high_traffic_port}};' state=present insertafter='server {'
+      when: stat_result.stat.exists == true
+  
+    # Stop then start Nginx
+    - name: stop nginx
+      shell: systemctl stop nginx
+
+    - name: start nginx
+      shell: systemctl start nginx

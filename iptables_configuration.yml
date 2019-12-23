@@ -1,0 +1,79 @@
+
+---
+- hosts: "{{ target_host }}"
+  remote_user: "{{ target_user }}"
+  roles:
+    - role: common
+  vars:
+    iptables_file: "{{iptables_file}}"
+    source_key: ./roles/common/files/{{iptables_file}}
+    dest_network_key: /etc/network/if-pre-up.d/iptables
+    dest_etc_key: /etc/{{iptables_file}}.conf
+    dest_etc_shell: /etc/{{iptables_file}}.sh
+  tasks:
+  - name: Ensure iptables file exists.
+    file:
+      dest: "{{ dest_network_key | dirname }}"
+      mode: 0755
+      owner: root
+      state: directory
+
+  - name: Copy iptables to network interface
+    copy:
+      content: '#!/bin/bash'
+      dest: "{{ dest_network_key }}"
+      mode: 0755
+      owner: root
+
+  - name: Remove previous iptables configuration
+    lineinfile: dest=/etc/network/if-pre-up.d/iptables
+                regexp="^/sbin/iptables-restore"
+                state=absent
+
+  - name: Add iptables file to network start up
+    lineinfile: dest=/etc/network/if-pre-up.d/iptables
+                line="/sbin/iptables-restore < /etc/{{iptables_file}}.conf"
+
+  #i- name: Copy iptables to network interface
+  #  copy:
+  #    src: "{{ source_key }}"
+  #    dest: "{{ dest_network_key }}"
+  #    mode: 0755
+  #    owner: root
+
+  - name: Ensure firewall file exists etc.
+    file:
+      dest: "{{ dest_etc_key | dirname }}"
+      mode: 0755
+      owner: root
+      state: directory
+
+  - name: Check for var iptables_file
+    debug:
+      msg:
+      - " Make sure you are including the -e 'iptables_file=iptables_somefile' tranfers both .conf and .sh"
+
+  - name: Copy configured iptables to etc
+    copy:
+     src: "{{ source_key }}.conf"
+     dest: "{{dest_etc_key}}"
+     mode: 755
+     owner: root
+ 
+  - name: Copy configure shell to etc
+    copy:
+     src: "{{ source_key }}.sh"
+     dest: "{{dest_etc_shell}}"
+     mode: 755
+     owner: root
+    tags: 'iptables_shell'
+
+  - name: Copy backup iptables to etc
+    copy:
+     src: ./roles/common/files/iptables.conf
+     dest: /etc/iptables.conf
+     mode: 755
+     owner: root
+
+    
+
