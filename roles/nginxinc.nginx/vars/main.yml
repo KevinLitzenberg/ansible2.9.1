@@ -4,3 +4,9 @@ nginx_cleanup_config_path:
 
 backend1_ip: 192.168.1.2
 backend2_ip: 192.168.1.3
+
+lb_installation_port: 60000
+
+lb_high_traffic_port: 60000-65000
+
+ws_backend_port: 80

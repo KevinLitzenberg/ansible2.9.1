@@ -11,9 +11,9 @@
       conf_file_location: /etc/nginx/
       user: nginx
       worker_processes: auto
-      worker_rlimit_nofile: 5120
+      worker_rlimit_nofile: 65536
       error_level: warn
-      worker_connections: 5120
+      worker_connections: 49152
       http_enable: true
       http_settings:
         keepalive_timeout: 65
@@ -39,7 +39,7 @@
         template_file: http/default.conf.j2
         conf_file_name: default.conf
         conf_file_location: /etc/nginx/conf.d/
-        port: "{{ ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0]) }}:{{ target_lb_ports }}"
+        port: "{{ ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0]) }}:{{ ws_backend_port }}"
         server_name: backend_server
         web_server_name: "{{ ansible_facts['hostname'] }}" 
         error_page: /usr/share/nginx/html

@@ -1,0 +1,18 @@
+# .roles/nginxinc.nginx/files/conf/unit/default_nginx_unit.conf 
+
+[Unit]
+After=network-online.target remote-fs.target nss-lookup.target
+Wants=network-online.target
+
+[Service]
+Type=forking
+PIDFile=/var/run/nginx.pid
+LimitNOFILE=65536
+LimitNPROC=65536
+ExecStart=/usr/sbin/nginx -c /etc/nginx/nginx.conf
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+
+[Install]
+WantedBy=multi-user.target
+

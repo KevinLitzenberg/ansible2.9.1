@@ -29,7 +29,7 @@
     nginx_http_template_enable: true
     nginx_http_template:
       default:
-        port: "{{ ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0]) }}:{{ target_lb_ports }}"
+        port: "{{ ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0]) }}:{{ lb_installation_port }}"
         server_name: frontend_server
         template_file: http/default.conf.j2
         conf_file_name: upstreams.conf
