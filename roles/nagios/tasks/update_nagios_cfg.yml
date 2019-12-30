@@ -1,0 +1,8 @@
+# Adds the servers folder to nagios.cfg
+---
+- name: Update the cfg_dir to include the servers location.
+  lineinfile:
+    dest: /usr/local/nagios/etc/nagios.cfg
+    insertbefore: "#cfg_dir=/usr/local/nagios/etc/servers"
+    line: cfg_dir=/usr/local/nagios/etc/servers
+    state: present

@@ -1,0 +1,26 @@
+# Ensures that the users .ssh directory exists, creates if not.
+# Installs a private key from directory on local
+# Vars:
+#  - You must provide your own private key and point to that dir.
+---
+- hosts: "{{ target_host }}"
+  remote_user: "{{ target_user }}"
+  vars:
+    add_user: some_user
+    source_key: /home/developer/temp/nginx_localkey
+    dest_key: /home/some_user/.ssh/id_rsa
+  tasks:
+  - name: Ensure .ssh directory exists.
+    file: 
+      dest: "{{ dest_key | dirname }}"
+      mode: 0700 
+      owner: "{{ add_user }}"
+      state: directory
+ 
+  - name: Install ssh key for use as jumphost
+    copy: 
+      src: "{{ source_key }}" 
+      dest: "{{ dest_key }}"
+      mode: 0600
+      owner: "{{ add_user }}"
+      group: "{{ add_user }}"

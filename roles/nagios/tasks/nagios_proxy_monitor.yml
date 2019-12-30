@@ -1,0 +1,18 @@
+---
+- hosts: "{{ target_host }}"
+  remote_user: "{{ target_user }}"
+  vars:
+     download_dir: "{{ ansible_env.HOME }}/nagios"
+  tasks:
+    - name: clone nagios_check_http_proxy
+      git:
+        repo: https://github.com/SimpleFinance/nagios-check-http-proxy
+        dest: {{ download_dir }}
+
+
+     # Run the check:
+     # https://github.com/SimpleFinance/nagios-check-http-proxy
+     # nrpe.cfg
+     # command[check_http_proxy]=/root/nagios/nagios-check-http-proxy/bin/check_http_proxy -H 192.168.1.8 -p 60000 -P 192.168.1.8 
+
+

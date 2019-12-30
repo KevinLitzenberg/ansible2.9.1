@@ -1,0 +1,7 @@
+---
+- hosts: "{{ target_host }}"
+  remote_user: "{{ target_user }}"
+  vars_files:
+    - roles/networklore.nagios/vars/main.yml
+  roles:
+    - { role: networklore.nagios }

@@ -1,0 +1,11 @@
+---
+# tasks file for nagios
+- name: Update nagios.cfg
+  include: update_nagios_cfg.yml
+
+- name: Update nagios server to accept nrpe commands
+  include: update_commands.yml
+
+- name: Update nagios conacts.yml
+  include: update_contacts.yml
+

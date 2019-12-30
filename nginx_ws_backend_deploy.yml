@@ -1,3 +1,5 @@
+# Deploys backends for load balancers
+# Uses the variable "target_lb_port" to set the listening port on the server.
 ---
 - hosts: "{{ target_host }}"
   remote_user: "{{ target_user }}"

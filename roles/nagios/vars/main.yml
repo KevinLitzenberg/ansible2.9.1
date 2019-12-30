@@ -1,0 +1,4 @@
+---
+# vars file for nagios
+
+nagios_admin_email: change_default@email.com

@@ -1,0 +1,23 @@
+# Run this before running nagios_install_server.yml on Ubuntu16.04
+# Install python3-pip via apt
+# Symbolically links /ust/bin/pip with /usr/bin/pip3
+# Install passlib with pip3
+---
+- hosts: "{{ target_host }}"
+  remote_user: "{{ target_user }}"
+  tasks:
+    - name: install python3-pip
+      apt:
+        pkg:
+        - python3-pip
+    
+    - name: create symbolic link to pip3
+      file:
+        src: /usr/bin/pip3
+        dest: /usr/bin/pip
+        state: link
+
+    - pip:
+        name:
+        - passlib
+

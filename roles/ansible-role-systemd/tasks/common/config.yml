@@ -1,6 +1,0 @@
----
-- name: render systemd unit configurations
-  include: common/unit_config.yml
-  loop: "{{ unit_config }}"
-  loop_control:
-    loop_var: unit

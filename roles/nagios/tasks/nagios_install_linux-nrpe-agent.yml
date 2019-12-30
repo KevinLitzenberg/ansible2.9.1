@@ -1,0 +1,29 @@
+# Downloads the linux-nrpe-agent
+# Creates the download dir if it does not exist
+# Unpacks linux-nrpe-agent.tar
+# runs ./fullinstall -n -i server_ip
+---
+- hosts: "{{ target_host }}"
+  remote_user: "{{ target_user }}"
+  vars:
+    download_dir: "{{ ansible_env.HOME }}/nagios"
+    linux_nrpe_agent_url: https://assets.nagios.com/downloads/nagiosxi/agents/linux-nrpe-agent.tar.gz
+    linux_nrpe_src: linux-nrpe-agent
+    nagios_server_ip: "{{ server_ip  }}"
+
+  tasks:
+    - name: Create the nagios dir if it doesn't exist.
+      file:
+        path: "{{ download_dir }}"
+        state: directory
+
+
+    - name: GET nrpe agent
+      get_url: url={{ linux_nrpe_agent_url }} dest={{ download_dir }}/{{ linux_nrpe_src }}.tar.gz
+
+    - name: Unpack the linux-nrpe-agent
+      shell: cd {{ download_dir }} && tar -xzvf {{ linux_nrpe_src }}.tar.gz creates={{ download_dir }}/{{ linux_nrpe_src }}
+
+    - name: Install the nrpe linux agent.
+      shell: cd {{ download_dir }}/{{ linux_nrpe_src }} && ./fullinstall -n -i {{ nagios_server_ip }}
+

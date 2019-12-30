@@ -1,0 +1,24 @@
+# Removes default email
+# Removes previous email if not default
+# Adds the email that is in roles/nagios/vars/mail 'nagios_admin_email'
+---
+- name: Remove the default email.
+  lineinfile:
+    path: /usr/local/nagios/etc/objects/contacts.cfg
+    line: '    email                   nagios@localhost ; <<***** CHANGE THIS TO YOUR EMAIL ADDRESS ******'
+    state: absent
+
+- name: Remove the previous nagios_admin_email.
+  lineinfile:
+    path: /usr/local/nagios/etc/objects/contacts.cfg
+    regex: '^email*'
+    state: absent
+
+
+- name: Update the default email address.
+  lineinfile:
+    path: /usr/local/nagios/etc/objects/contacts.cfg
+    insertafter: 'alias                   Nagios Admin            ; Full name of user'
+    line:       email                    {{ nagios_admin_email }};
+    state: present
+
