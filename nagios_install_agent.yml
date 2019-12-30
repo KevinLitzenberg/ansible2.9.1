@@ -1,0 +1,39 @@
+# Downloads the agent 
+# Compiles and install the agent
+---
+- hosts: "{{ target_host }}"
+  remote_user: "{{ target_user }}"
+  #roles:
+  #  - role: networklore.nagios
+  vars:
+    download_dir: "{{ ansible_env.HOME }}/nagios"
+    #nrpe_pluginurl: https://github.com/NagiosEnterprises/nrpe/releases/download/nrpe-3.2.1/nrpe-3.2.1.tar.gz
+    nrpe_pluginurl: http://nagios-plugins.org/download/nagios-plugins-2.3.1.tar.gz
+    #nrpe_pluginsrc: nrpe-3.2.1
+    nrpe_pluginsrc: nagios-plugins-2.3.1
+
+  tasks:
+    # create the user to run the agent.
+    - name: add nagios user
+      user:
+        name: nagios 
+
+    - name: GET nrpe_plugin
+      get_url: url={{ nrpe_pluginurl }} dest={{ download_dir }}/{{ nrpe_pluginsrc }}.tar.gz
+
+    - name: Unpack nrpe_plugin source files
+      shell: cd {{ download_dir }} && tar -xzvf {{ nrpe_pluginsrc }}.tar.gz creates={{ download_dir }}/{{ nrpe_pluginsrc }}
+
+    - name: ./configure
+      #shell: cd {{ download_dir }}/{{ nrpe_pluginsrc }} && ./configure
+      # Digital Ocean below
+      shell: cd {{ download_dir }}/{{ nrpe_pluginsrc }} && ./configure --with-nagios-user=nagios --with-nagios-group=nagios 
+
+    - name: Make all
+      #shell: cd {{ download_dir }}/{{ nrpe_pluginsrc }} && make check_nrpe
+      # Digital Ocean
+      shell: cd {{ download_dir }}/{{ nrpe_pluginsrc }} && make
+
+
+    - name: Make install
+      shell: cd {{ download_dir }}/{{ nrpe_pluginsrc }} && make install

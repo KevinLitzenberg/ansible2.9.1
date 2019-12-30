@@ -1,0 +1,65 @@
+# Creates the folder servers for the configs
+# Uploads the configs based on tag 
+# Reload nagios so that new configs are applied
+---
+- hosts: "{{ target_host }}"
+  remote_user: "{{ target_user }}"
+  vars: 
+    source_dir: ../files 
+    dest_dir: /usr/local/nagios/etc/servers
+  tasks:
+
+    - name: create the servers folder to hold server config
+      file: 
+       path: /usr/local/nagios/etc/servers
+       owner: nagios
+       group: nagios
+       state: directory
+      tags: ['dev','stage','prod']
+
+  
+    - name: Copy dev server configs to nagios server
+      copy:
+        #src: roles/nagios/files/{{item.item_name}}
+        src: "{{source_dir}}/{{item.item_name}}"
+        dest: "{{dest_dir}}/{{item.item_name}}"
+        mode: 0655
+        owner: root
+        group: root
+      with_items:
+        - { item_name: devAnsibleNginx01.cfg }
+        - { item_name: devAnsibleNginx02.cfg }
+        - { item_name: devAnsibleNginxlb.cfg }
+      tags: 'dev'
+
+    - name: Copy stage server configs to nagios server
+      copy:
+        #src: roles/nagios/files/{{item.item_name}}
+        src: "{{source_dir}}/{{item.item_name}}"
+        dest: "{{dest_dir}}/{{item.item_name}}"
+        mode: 0655
+        owner: root
+        group: root
+      with_items:
+        - { item_name: aws_ws_nginx01.cfg }
+        - { item_name: aws_ws_nginx02.cfg }
+        - { item_name: aws_lb_nginx01.cfg }
+      tags: 'stage'
+
+    - name: Copy prod server configs to nagios server
+      copy:
+        #src: roles/nagios/files/{{item.item_name}}
+        src: "{{source_dir}}/{{item.item_name}}"
+        dest: "{{dest_dir}}/{{item.item_name}}"
+        mode: 0655
+        owner: root
+        group: root
+      with_items:
+        - { item_name: prod_nginx01.cfg }
+        - { item_name: prod_nginx02.cfg }
+        - { item_name: prod_lb.cfg }
+      tags: 'prod' 
+
+    - name: Restart nagios
+      shell: systemctl restart nagios
+      tags: ['dev','stage','prod'] 

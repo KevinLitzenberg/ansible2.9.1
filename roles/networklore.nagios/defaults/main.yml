@@ -1,0 +1,42 @@
+---
+# defaults file for nagios
+
+# Directory that will be used as the location for the downloads§
+download_dir: "{{ ansible_env.HOME }}/nagios"
+
+nagios_version: 4.4.5
+# Define the download url for the Nagios Core source files and the version you want to use.
+nagiosurl: "https://assets.nagios.com/downloads/nagioscore/releases/nagios-{{ nagios_version }}.tar.gz"
+
+# This is the directory where the Nagios source files will be placed, this should be
+# the directory which is created when the download file is unpacked when runnint
+# tar -xzvf nagios-4.3.2.tar.gz
+# code checked http://mathias-kettner.com/check_mk_download_source.html for version of mk-livestatus 1.2.8p22
+nagiossrc: "nagios-{{ nagios_version }}"
+
+# Define the download url for the Plugins and the version you want to use.
+pluginsurl: http://nagios-plugins.org/download/nagios-plugins-2.3.1.tar.gz
+# This is the directory where the Plugin source files will be placed, this should be
+# the directory which is created when the download file is unpacked when runnint
+# tar -xzvf nagios-plugins-2.2.1.tar.gz
+pluginssrc: nagios-plugins-2.3.1
+
+
+
+# Download and complie the nrpe server plugin
+nrpe_pluginurl: https://github.com/NagiosEnterprises/nrpe/releases/download/nrpe-3.2.1/nrpe-3.2.1.tar.gz
+
+nrpe_pluginsrc: nrpe-3.2.1
+
+
+
+monitoring_user: nagios
+monitoring_command_group: nagcmd
+
+# This is a list of users allowed to login to the nagios web frontend
+nagios_users:
+  - user: nagiosadmin
+    pass: Prest0Chang0
+
+# This option will be used if you want to uninstall debian packages for nagios and check-mk-livestatus
+ansible_role_nagios_remove_packages: false

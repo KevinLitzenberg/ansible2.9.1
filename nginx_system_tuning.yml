@@ -1,3 +1,13 @@
+# Updates nginx Unit file
+# Updates the /etc/security for user nginx
+# Reload systctl to make changes effective
+# Imports sysctl settings to /etc/sysctl.d/{file_name}
+# Adjusts NGINX frontend_lb to listen on ports 60000-65000
+# Finally will STOP and START nginx. So that NGINX can get new settings.
+#
+#Vars:
+#  - hardcoded sysctl settings.  Point to your own hardcoded sysctl settings
+#  - Uses role/nginxinc/vars/main.yml 'lb_high_traffic_port' set to your own value.
 ---
 - hosts: "{{ target_host }}"
   remote_user: "{{ target_user }}"

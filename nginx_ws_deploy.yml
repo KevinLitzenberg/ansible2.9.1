@@ -1,3 +1,4 @@
+# Deploys a single webserver utilzing the Nginx demo site
 ---
 - hosts: "{{ target_host }}"
   remote_user: "{{ target_user }}"

@@ -1,3 +1,6 @@
+# Creates standard load balancer with stock opensource load balncing algorithms
+# Uses vars backend{1&2}_ip.  Set these values in vars/main.yml
+# Employes http/1.1 on the backends
 ---
 - hosts: "{{ target_host }}"
   remote_user: "{{ target_user }}"

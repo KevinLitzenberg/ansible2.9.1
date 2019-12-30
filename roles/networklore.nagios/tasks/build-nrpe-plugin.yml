@@ -1,0 +1,36 @@
+---
+
+- name: GET nrpe_plugin
+  get_url: url={{ nrpe_pluginurl }} dest={{ download_dir }}/{{ nrpe_pluginsrc }}.tar.gz
+
+- name: Unpack nrpe_plugin source files
+  shell: cd {{ download_dir }} && tar -xzvf {{ nrpe_pluginsrc }}.tar.gz creates={{ download_dir }}/{{ nrpe_pluginsrc }}
+
+# Ditgital Ocean
+- name: ./configure
+  shell: cd {{ download_dir }}/{{ nrpe_pluginsrc }} && ./configure --enable-command-args --with-nagios-user=nagios --with-nagios-group=nagios
+
+#Per Nagios
+#- name: Make all
+# shell: cd {{ download_dir }}/{{ nrpe_pluginsrc }} && make check_nrpe
+
+# Digital Ocean
+- name: Make all
+  shell: cd {{ download_dir }}/{{ nrpe_pluginsrc }} && make all
+
+- name: Make all
+  shell: cd {{ download_dir }}/{{ nrpe_pluginsrc }} && make install
+
+- name: Make all
+  shell: cd {{ download_dir }}/{{ nrpe_pluginsrc }} && make install-config
+
+- name: Make all
+  shell: cd {{ download_dir }}/{{ nrpe_pluginsrc }} && make install-init
+
+
+#Per nagios 
+#- name: Make install
+#  shell: cd {{ download_dir }}/{{ nrpe_pluginsrc }} && make install-plugin
+
+
+

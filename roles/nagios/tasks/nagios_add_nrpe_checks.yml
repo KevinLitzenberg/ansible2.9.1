@@ -1,0 +1,31 @@
+# Uploads the checks to the host
+# Resets the nrpe agent so changes take effect.
+#Vars:
+#  - disk_check : Location of disk to check on host.
+#  - http_port : port to monitor, defaults to 80 if nothing entered.
+---
+- hosts: "{{ target_host }}"
+  remote_user: "{{ target_user }}"
+  vars:
+    disk_location: "{{ disk_check }}"
+    http_mon_port: "{{ http_port | default(80)}}"
+  tasks:
+    - name: Update the commands.cfg to include nrpe
+      blockinfile:
+        path: /usr/local/nagios/etc/nrpe.cfg
+        block: |
+          command[check_users]=/usr/local/nagios/libexec/check_users -w 5 -c 10
+          command[check_load]=/usr/local/nagios/libexec/check_load -w 15,10,5 -c 30,25,20
+          command[check_disk]=/usr/local/nagios/libexec/check_disk -w 20% -c 10% -p {{disk_location}}
+          command[check_zombie_procs]=/usr/local/nagios/libexec/check_procs -w 5 -c 10 -s Z
+          command[check_total_procs]=/usr/local/nagios/libexec/check_procs -w 150 -c 200 
+          command[check_procs]=/usr/local/nagios/libexec/check_procs -w 300 -c 400
+          command[check_http]=/usr/local/nagios/libexec/check_http -I {{ ansible_default_ipv4.address }} -p {{ http_mon_port }}
+          command[check_ssh]=/usr/local/nagios/libexec/check_ssh -H 127.0.0.1 -p 22
+          command[check_mem]=/usr/local/nagios/libexec/custom_check_mem -w 20% -c 10% -n
+          command[check_open_files]=/usr/local/nagios/libexec/check_open_files.pl -w 90% -c 98%
+          command[check_netstat]=/usr/local/nagios/libexec/check_netstat.pl -L "HTTP Load" -p "http" -w 3000 -c 4000 -A "http,@"
+
+
+    - name: Reload the nrpe client
+      shell: systemctl reload inetd

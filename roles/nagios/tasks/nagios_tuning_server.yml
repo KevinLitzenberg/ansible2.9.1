@@ -1,0 +1,43 @@
+# Copies sysctl setting from files to sysctl.d folder
+# Reloads sysctl so setting are applied
+# Adjust the file limits for the nagios user
+# Reloads the systctl settings.
+# Vars:
+#   - file containing or updating the sysctl settings.
+
+---
+- hosts: "{{ target_host }}"
+  remote_user: "{{ target_user }}"
+  vars:
+    source_sysctl: ../files/99-nagios-high-use.conf
+    dest_sysctl: /etc/sysctl.d/99-nagios-high-use.conf
+  tasks:
+
+   # Update sysctl with high traffic values.
+    - name: Deploy the sysctl kernel settings
+      copy:
+        src: "{{ source_sysctl }}"
+        dest: "{{ dest_sysctl }}"
+        mode: 0644
+
+    # Reload sysctl when 99-hightraffic-lb-ws.conf has changed
+    - name: reload settings from all system configuration files
+      shell: sysctl --system
+
+
+    # Ajust the nginx user file open limits for a load balancer
+    - name: configure system settings, file descriptors and number of threads
+      pam_limits:
+        domain: nagios
+        limit_type: "{{item.limit_type}}"
+        limit_item: "{{item.limit_item}}"
+        value: "{{item.value}}"
+      with_items:
+        - { limit_type: '-', limit_item: 'nofile', value: 65536 }
+        - { limit_type: '-', limit_item: 'nproc', value: 65536 }
+        - { limit_type: 'soft', limit_item: 'memlock', value: unlimited }
+        - { limit_type: 'hard', limit_item: 'memlock', value: unlimited }
+
+    - name: reload settings from all system configuration files
+      shell: sysctl --system
+
