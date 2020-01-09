@@ -1,0 +1,32 @@
+# Downloads sqlite 3.3.1 (see vars/main.yml)
+# Creates the directory for the files
+# Unpacks the sqlite3 archive
+# Configures, makes, and make installs sqlite3
+---
+#- vars:
+#  download_sqlite3_dir: "{{ ansible_env.HOME }}/sqlite3"
+#  sqlite3_url: http://sqlite.org/2019/sqlite-autoconf-3300100.tar.gz
+#  sqlite3_src: sqlite-autoconf-3300100
+
+#  tasks:
+- name: Create the sqlite3 directory
+  file:
+   path: "{{ download_sqlite3_dir }}"
+   state: directory
+
+- name: WGET sqlite3 source files
+  get_url: 
+    url: "{{ sqlite3_url }}" 
+    dest: "{{ download_sqlite3_dir }}/{{ sqlite3_src }}.tar.gz"
+
+- name: Unpack sqlite3
+  shell: cd {{ download_sqlite3_dir }} && tar -xzvf {{ sqlite3_src }}.tar.gz creates={{ download_sqlite3_dir }}/{{ sqlite3_src }}
+
+- name: Build sqlite3
+  shell: cd {{ download_sqlite3_dir }}/{{ sqlite3_src }} && ./configure
+
+- name: make sqlite3
+  shell: cd {{ download_sqlite3_dir }}/{{ sqlite3_src }} && make
+
+- name: make install sqlite3
+  shell: cd {{ download_sqlite3_dir }}/{{ sqlite3_src }} && make install

@@ -1,0 +1,5 @@
+# Install dependencies for sqlite3 on Ubuntu18.04
+---
+- name: Apt install build-esstails (c compilier)
+  apt:
+    name: build-essential

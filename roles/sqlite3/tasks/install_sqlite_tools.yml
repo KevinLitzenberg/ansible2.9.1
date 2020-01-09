@@ -1,0 +1,17 @@
+# Depends on 'install_sqlite_tools_dependencies.yml.'
+# Downloads sqlite_tools3.3.1 (see vars/main.yml)
+# Creates the directory for the files
+# Unpacks the sqlite_tools archive
+# Unzips the sqlite_tools archive
+- name: Create the sqlite3 directory
+  file:
+    path: "{{ download_sqlitetools_dir }}"
+    state: directory
+
+- name: WGET sqlite_tools archive
+  get_url: 
+    url: "{{ sqlite_tools_url }}" 
+    dest: "{{ download_sqlitetools_dir }}/{{ sqlite_tools_src }}.zip"
+
+- name: Unpack sqlite_analyzer
+  shell: cd {{ download_sqlitetools_dir }} && unzip {{ sqlite_tools_src }}.zip creates={{ download_sqlitetools_dir }}/{{ sqlite_tools_src }}

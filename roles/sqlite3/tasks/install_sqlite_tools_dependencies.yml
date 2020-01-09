@@ -1,0 +1,15 @@
+# sqlite_tools needs unzip to unarchive the .zip
+# sqlite_tools requires 32bit-libraries
+
+- name: Install unzip
+  apt:
+    name: unzip
+
+- name: Install 32bit-libraries
+  apt:
+    pkg:
+      - libc6-i386
+      - lib32stdc++6
+      - lib32gcc1
+      - lib32ncurses5
+      - lib32z1 

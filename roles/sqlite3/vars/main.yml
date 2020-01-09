@@ -1,0 +1,12 @@
+---
+# vars file for sqlite3
+# Set sqlite3 version and directory
+download_sqlite3_dir: "{{ ansible_env.HOME }}/sqlite3"
+sqlite3_url: http://sqlite.org/2019/sqlite-autoconf-3300100.tar.gz
+sqlite3_src: sqlite-autoconf-3300100
+
+# Set the directory and source for sqlite_tools
+download_sqlitetools_dir: "{{ ansible_env.HOME }}/sqlite_tools"
+sqlite_tools_url:  https://www.sqlite.org/2019/sqlite-tools-linux-x86-3300100.zip
+sqlite_tools_src: sqlite-tools-linux-x86-3300100
+
