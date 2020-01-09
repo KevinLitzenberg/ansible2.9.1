@@ -1,0 +1,13 @@
+---
+# tasks file for sqlite3
+- name: Install C compiler
+  include: install_sqlite3_dependencies.yml
+
+- name: install sqlite3
+  include: install_sqlite3.yml
+
+- name: install sqlite tools 32-libararies and unzip
+  include: install_sqlite_tools_dependencies.yml
+
+- name: unarchive sqlite tools
+  include: install_sqlite_tools.yml

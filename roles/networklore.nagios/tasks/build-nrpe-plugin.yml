@@ -31,6 +31,3 @@
 #Per nagios 
 #- name: Make install
 #  shell: cd {{ download_dir }}/{{ nrpe_pluginsrc }} && make install-plugin
-
-
-
