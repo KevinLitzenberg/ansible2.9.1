@@ -1,0 +1,67 @@
+# Create the user node_exporter
+# Downloads the node_exporter v0.18.1
+# Creates a working directory for the install (/root/prometheus/file_name)
+# Unarchives the file in the working directory
+# Changes ownership of the file node_exporter to user:group node_exporter
+# Moves the file node_exporter to /home/node_exporter if it exists in working dir
+# Uploads node_exporter Unit file
+# Reloads the daemon-system
+# Starts node_exporter if it is not started
+# Remove the install .tar.gz and install files from working dir
+
+- name: Add node_exporter user
+  user:
+    name: node_exporter
+    shell: /bin/false
+
+- name: Create the node_exporter directory
+  file:
+    path: "{{ download_node_exporter_dir }}"
+    state: directory
+
+- name: WGET Prometheus node_exporter
+  get_url:
+    url: "{{ node_exporter_url }}"
+    dest: "{{ download_node_exporter_dir }}/{{ node_exporter_src}}.tar.gz"
+
+- name: Unpack Prometheus node_exporter
+  shell: cd {{ download_node_exporter_dir }} && tar zxvf {{ node_exporter_src }}.tar.gz creates={{ download_node_exporter_dir }}/{{ node_exporter_src }}
+
+- name: Update the file ownership and group to node_exporter
+  file:
+    path: "{{ download_node_exporter_dir }}/{{ node_exporter_src }}"
+    recurse: yes
+    owner: node_exporter
+    group: node_exporter
+
+- name: Stat node_exporter
+  stat: path="{{ download_node_exporter_dir }}/{{ node_exporter_src }}/node_exporter"
+  register: node_exporter_stat
+
+- name: Move the contents of the node_exporter to the node_exporter user
+  command: mv "{{ download_node_exporter_dir }}/{{ node_exporter_src }}/"node_exporter /home/node_exporter
+  when: node_exporter_stat.stat.exists
+
+- name: Upload node_exporter systemd unit file
+  copy:
+    src: ../files/node_exporter.service
+    dest: /etc/systemd/system/
+    mode: 0655
+    owner: root
+    group: root
+
+- name: Reload system daemon to update node_exporter unit file
+  systemd:
+    daemon_reload: yes
+
+- name: Start the systemd node-exporter
+  systemd:
+    state: started
+    name: node_exporter
+
+- name: Remove the node_exporter files from root dir.
+  file:
+    path: "{{ download_node_exporter_dir }}"
+    state: absent
+    
+ 
