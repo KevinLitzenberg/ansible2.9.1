@@ -20,8 +20,9 @@ aws_lb_nginx01 target_user=ubuntu
 #aws_lb_nginx02 target_user=ubuntu
 
 [dev_test_monitoring]
-devSqlite3 target_user=vargant
+devSqlite3 target_user=vagrant
 devPrometheus target_user=vagrant
+devPrometheus2 target_user=vagrant
 devGrafana target_user=vagrant
 
 [dev_test_backend]

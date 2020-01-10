@@ -1,0 +1,21 @@
+# Gathers hostvar info and displays mostly network related facts
+---
+- hosts: "{{ target_host }}"
+  remote_user: "{{ target_user }}"
+  gather_facts: False
+  tasks:
+    - name: Gather info on group
+      setup:
+        #filter:
+        gather_subset: network
+
+    - debug: var=ansible_nodename
+    - debug: var=ansible_all_ipv4_addresses
+    - debug: var=ansible_default_ipv4.address
+    - debug: var=ansible_hostname
+    - debug: var=hostvars[inventory_hostname]['ansible_all_ipv4_addresses']
+    - debug: var=hostvars[inventory_hostname]['ansible_default_ipv4']['address']
+    - debug: var=hostvars[inventory_hostname]['ansible_eth0']['ipv4']['address']
+    - debug: var=hostvars[inventory_hostname]['ansible_eth0']['macaddress']
+    - debug: var=hostvars[inventory_hostname]['ansible_eth1']['ipv4']['address']
+    - debug: var=hostvars[inventory_hostname]['ansible_eth1']['macaddress']

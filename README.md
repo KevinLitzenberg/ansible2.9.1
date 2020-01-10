@@ -16,6 +16,7 @@ Python3.7.5
 
 2. Install ansible via pip3 with-in the virutal environment
 > pip install -r requirements.txt
+	* Prometheus role requires jmespath
 
 3. Update the ansible.cfg to reflect any local chnages that may need updating.I.E. /home/your_user_name
 
