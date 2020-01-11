@@ -7,8 +7,8 @@
   remote_user: "{{ target_user }}"
   vars:
     add_user: some_user
-    source_key: /home/developer/temp/nginx_localkey
-    dest_key: /home/some_user/.ssh/id_rsa
+    source_key: /home/developer/some_key/some_private_key
+    dest_key: /home/tatari/.ssh/id_rsa
   tasks:
   - name: Ensure .ssh directory exists.
     file: 
