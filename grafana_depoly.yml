@@ -1,0 +1,29 @@
+# Update prometheus_web_listen_address defaults/main.yml. 
+- hosts: "{{ target_host }}"
+  remote_user: "{{ target_user }}"
+  roles:
+    - role: ansible-grafana
+      vars:
+        grafana_address: "{{ ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0]) }}"
+        grafana_security:
+          admin_user: admin
+          admin_password: admin
+        grafana_datasources:
+          - name: prometheus
+            type: prometheus
+            access: http
+            url: 'http://{{ prometheus_web_listen_address }}:9090'
+            basicAuth: false
+        grafana_dashboards:
+        - dashboard_id: 405
+          revision_id: 8
+          datasource: prometheus
+        - dashboard_id: 9096
+          revision_id: 4
+          datasource: prometheus
+        - dashboard_id: 1860
+          revision_id: 15
+          datasource: prometheus
+
+
+
