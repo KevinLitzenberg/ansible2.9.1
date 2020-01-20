@@ -2,5 +2,9 @@
 # defaults file for ansible-prometheus-exporters
 # Set node_exporter version
 download_node_exporter_dir: "{{ ansible_env.HOME }}/prometheus"
+# x86_64
 node_exporter_url: https://github.com/prometheus/node_exporter/releases/download/v0.18.1/node_exporter-0.18.1.linux-amd64.tar.gz
 node_exporter_src: node_exporter-0.18.1.linux-amd64
+# arm64 arch
+#node_exporter_url: https://github.com/prometheus/node_exporter/releases/download/v0.18.1/node_exporter-0.18.1.linux-arm64.tar.gz
+#node_exporter_src: node_exporter-0.18.1.linux-arm64

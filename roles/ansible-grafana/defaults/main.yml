@@ -1,5 +1,5 @@
 ---
-prometheus_web_listen_address: 192.168.1.6
+prometheus_web_listen_address: 0.0.0.0
 
 grafana_version: latest
 grafana_yum_repo_template: etc/yum.repos.d/grafana.repo.j2
