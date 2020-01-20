@@ -1,16 +1,29 @@
 # Uses https://github.com/cloudalchemy/ansible-prometheus
 # Installs Prometheus 2.15.2
-# Install systemd unit file
+# Installs systemd unit file
+# Update prometheus_targets with target hosts
+# Update ../defaults/main.yml prometheus_scrape_configs file_sd_configs
 ---
 - hosts: "{{ target_host }}"
   remote_user: "{{ target_user }}"
   roles:
     - role: ansible-prometheus
   vars:
+    prometheus_global:
+      scrape_interval: 5s
+      scrape_timeout: 3s
+      evaluation_interval: 5s
+
     prometheus_targets:
       node:
       - targets:
-        - localhost:9100
-        - 192.168.1.3:9100
+        - "{{ ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0]) }}:9100"
         labels:
           env: monitoring
+      - targets:
+
+      sqlite3:
+      - targets:
+        - 0.0.0.0:9100
+        labels:
+          env: production

@@ -1,0 +1,23 @@
+---
+#- name: add architecure
+#  command: dpkg --add-architecture arm64
+
+- name: Install dependencies for arm64
+  apt:
+    pkg:
+      - adduser
+      - libfontconfig1
+
+- name: Create the grafana-arm64 directory
+  file:
+    path: "{{ download_grafana_arm64_dir }}"
+    state: directory
+
+- name: WGET sqlite_tools archive
+  get_url:
+    url: "{{ grafana_arm64_url }}"
+    dest: "{{ download_grafana_arm64_dir }}/{{ grafana_arm64_src }}.zip"
+
+- name: install grafana-arm64
+  apt: 
+    deb: "{{ grafana_arm64_url }}"

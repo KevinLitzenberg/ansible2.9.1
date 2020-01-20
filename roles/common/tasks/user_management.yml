@@ -1,7 +1,8 @@
 # UPDATE the var "some_user" to a user name that is being added.
-# Adds the user shell and add to sudo
-# Allows user passwordless sudo
-# Add sudo group to user
+# UPDATE the known_hosts file local location.
+# Adds the user shell and add to sudo.
+# Allows user passwordless sudo.
+# Add sudo group to user.
 ---
 - hosts: "{{ target_host }}"
   remote_user: "{{ target_user }}"
@@ -22,7 +23,7 @@
         user: "{{ add_user }}" 
         key: "{{item}}"
       with_file:
-        - /home/developer/Prometheus/Tatari/authorized_keys
+        - /home/developer/some_local_dir/authorized_keys
 
     - name: Allow user's group to have passwordless sudo
       lineinfile:

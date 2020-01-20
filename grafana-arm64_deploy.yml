@@ -1,0 +1,5 @@
+# Base install of grafana on arm64 arch
+- hosts: "{{ target_host }}"
+  remote_user: "{{ target_user }}"
+  roles:
+    - role: ansible-grafana-arm64

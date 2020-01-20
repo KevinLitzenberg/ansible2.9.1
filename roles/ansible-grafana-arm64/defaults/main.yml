@@ -1,0 +1,7 @@
+---
+# defaults file for ansible-grafana-arm64
+# defaults file for grafan-arm64
+download_grafana_arm64_dir: "{{ ansible_env.HOME }}/grafana-arm64"
+grafana_arm64_url: https://dl.grafana.com/oss/release/grafana_6.5.2_arm64.deb
+grafana_arm64_src: grafana_6.5.2_arm64.deb
+

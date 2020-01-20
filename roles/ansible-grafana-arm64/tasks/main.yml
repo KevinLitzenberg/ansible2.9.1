@@ -1,0 +1,4 @@
+---
+# tasks file for ansible-grafana-arm64
+- include: install_grafana-deb.yml
+  become: true

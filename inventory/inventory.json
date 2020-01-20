@@ -25,11 +25,13 @@ devPrometheus target_user=vagrant
 devPrometheus2 target_user=vagrant
 devGrafana target_user=vagrant
 devGrafana2 target_user=vagrant
+devAnsibleBase18 target_user=vagrant
 
 [aws_monitoring_stack]
 aws_sqlite3 target_user=ubuntu
 aws_prometheus target_user=ubuntu
 aws_grafana target_user=ubuntu
+
 
 [dev_test_backend]
 devAnsibleBackend target_user=vagrant sticky_backend_id=backend=backend1
