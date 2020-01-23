@@ -1,2 +1,7 @@
+# Only works when used in main.yml role
 ---
 # handlers file for common
+- name: restart_sshd
+  systemd:
+     name: sshd
+     state: restarted
