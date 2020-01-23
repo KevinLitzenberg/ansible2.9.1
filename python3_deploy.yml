@@ -1,0 +1,5 @@
+- hosts: "{{ target_host }}"
+  remote_user: "{{ target_user }}"
+  roles:
+    - name: ansible-python3
+      python3_ver: "python3.8"

@@ -1,0 +1,11 @@
+- name: Install distro managment
+  apt:
+    name: software-properties-common
+
+- apt_repository:
+    repo: ppa:deadsnakes/ppa
+    state: present
+
+- name: Update apt packages
+  apt: 
+    update_cache: yes
