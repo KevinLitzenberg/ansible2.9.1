@@ -1,0 +1,17 @@
+# Install python3.x dependencies
+- name: Install Python3 
+  apt:
+    name: "{{ python3_ver }}"
+
+- name: Install pip3
+  apt:
+    name: python3-pip
+
+- name: Install additional tools
+  apt:
+    pkg:
+      - build-essential 
+      - libssl-dev 
+      - libffi-dev
+      - "{{ python3_ver }}-dev" 
+      - "{{ python3_ver }}-venv"

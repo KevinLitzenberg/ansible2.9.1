@@ -20,11 +20,11 @@ aws_lb_nginx01 target_user=ubuntu
 #aws_lb_nginx02 target_user=ubuntu
 
 [dev_test_monitoring]
-devSqlite3 target_user=vagrant
+server1 target_user=vagrant
+server2 target_user=vagrant
+server3 target_user=vagrant
 devPrometheus target_user=vagrant
-devPrometheus2 target_user=vagrant
 devGrafana target_user=vagrant
-devGrafana2 target_user=vagrant
 devAnsibleBase18 target_user=vagrant
 
 [aws_monitoring_stack]

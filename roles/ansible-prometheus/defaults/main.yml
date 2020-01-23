@@ -5,7 +5,7 @@ prometheus_binary_local_dir: ''
 prometheus_config_dir: /etc/prometheus
 prometheus_db_dir: /var/lib/prometheus
 
-prometheus_web_listen_address: "0.0.0.0:9090"
+prometheus_web_listen_address: "192.168.1.6:9090"
 prometheus_web_external_url: ''
 
 prometheus_storage_retention: "30d"
@@ -73,10 +73,21 @@ prometheus_scrape_configs:
       - files:
           - "{{ prometheus_config_dir }}/file_sd/node.yml"
 
-  - job_name: "sqlite3"
+  - job_name: "server1"
     file_sd_configs:
       - files:
-          - "{{ prometheus_config_dir }}/file_sd/sqlite3.yml"
+          - "{{ prometheus_config_dir }}/file_sd/server1.yml"
+
+  - job_name: "server2"
+    file_sd_configs:
+      - files:
+          - "{{ prometheus_config_dir }}/file_sd/server2.yml"
+
+  - job_name: "server3"
+    file_sd_configs:
+      - files:
+          - "{{ prometheus_config_dir }}/file_sd/server3.yml"
+
 
 # Alternative config file name, searched in ansible templates path.
 prometheus_config_file: 'prometheus.yml.j2'

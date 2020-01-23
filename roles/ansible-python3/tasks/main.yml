@@ -1,0 +1,7 @@
+---
+# tasks file for ansible-python3
+- name: updated source.list with dead snakes
+  include: update_sources_list.yml
+
+- name: Install Python3 and all it's dependencies
+  include: install_python3_packages.yml
