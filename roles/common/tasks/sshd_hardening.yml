@@ -1,0 +1,58 @@
+# Restricts HostKeys
+# Changes Key exchange algorithms
+# Changes symmetric ciphers
+# Changes message authentication codes
+---
+- hosts: "{{ target_host }}"
+  remote_user: "{{ target_user }}"
+  tasks:
+    - name: sshd_config Restrict HostKeys ecdsa
+      lineinfile: 
+          path: /etc/ssh/sshd_config
+          regexp: 'HostKey /etc/ssh/ssh_host_ecdsa_key'
+          state: absent
+          validate: '/usr/sbin/sshd -T -f %s'
+      notify:
+        - restart_sshd
+
+    - name: sshd_config Restict HostKey dsa 
+      lineinfile:
+          path: /etc/ssh/sshd_config
+          regexp: 'HostKey /etc/ssh/ssh_host_dsa_key'
+          state: absent
+          validate: '/usr/sbin/sshd -T -f %s'
+      notify:
+        - restart_sshd
+
+    - name: Key exchange algorithms
+      lineinfile:
+          path: /etc/ssh/sshd_config
+          regex: '^KexAlgorithms'
+          line: 'KexAlgorithms curve25519-sha256@libssh.org,diffie-hellman-group-exchange-sha256'
+          validate: '/usr/sbin/sshd -T -f %s'
+      notify:
+        - restart_sshd
+
+    - name: Update Ciphers
+      lineinfile:
+          path: /etc/ssh/sshd_config
+          regex: '^Ciphers'
+          line: 'Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr'
+          validate: '/usr/sbin/sshd -T -f %s'
+      notify:
+        - restart_sshd
+
+    - name: Update Message Authenication Codes MACs
+      lineinfile:
+          path: /etc/ssh/sshd_config
+          regexp: '^MACs'
+          line: 'MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com'
+          validate: '/usr/sbin/sshd -T -f %s'
+      notify: 
+        - restart_sshd
+
+  handlers:
+    - name: restart_sshd
+      systemd:
+         name: sshd
+         state: restarted   

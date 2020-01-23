@@ -98,6 +98,15 @@ Vars:
 1. Ensures that the users .ssh directory exists, creates if not.
 2. Installs a private key from directory on local
 
+[[ sshd_hardening.yml ]]
+> ansible-playbook roles/common/tasks/sshd_hardening.yml -e "target_host=some_host"
+
+1. Updates the asymmetrical encrypthion Key Exchange algorithms to curve25519 and diffie-hellman-sha256
+2. Updates symmetrical encryption Ciphers to chacha20, aes256-gcm, aes128-gcm, ase256-ctr, and aes128-ctr
+3. Update the MAC Hashing algorithms to hmac-sha2-512, hmac-sha2-256-etm, umac-128-etm, hmac-sha2-512-sha-256, umac-128
+4. Removes ecdsa and dsa HostKeys if they were in use.  leaving rsa and ED25519.
+5. Notifies the sshd handler and reloads the systemd service IF the new config passes validation. (/usr/sshd -T) 
+6. Sleep better you are safer.
 
 [[user_management.yml]] 
 
