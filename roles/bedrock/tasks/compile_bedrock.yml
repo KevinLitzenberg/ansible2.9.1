@@ -1,0 +1,8 @@
+- name: Compile Bedrock
+  shell: cd {{ bedrock_clone_dir }} && make
+
+- name: Create a bedrock.db
+  file:
+    path: "{{ bedrock_clone_dir }}/bedrock.db"
+    state: touch
+    mode: 0655

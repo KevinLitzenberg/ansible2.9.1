@@ -9,4 +9,3 @@ sqlite3_src: sqlite-autoconf-3300100
 download_sqlitetools_dir: "{{ ansible_env.HOME }}/sqlite_tools"
 sqlite_tools_url:  https://www.sqlite.org/2019/sqlite-tools-linux-x86-3300100.zip
 sqlite_tools_src: sqlite-tools-linux-x86-3300100
-

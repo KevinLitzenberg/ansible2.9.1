@@ -1,0 +1,5 @@
+---
+# defaults file for bedrock
+
+bedrock_clone_dir: "{{ ansible_env.HOME }}/bedrock"
+bedrock_src: https://github.com/Expensify/Bedrock.git

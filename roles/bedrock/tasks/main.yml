@@ -1,0 +1,11 @@
+---
+# tasks file for bedrock
+- name: Install dependencies
+  include: install_dependencies.yml
+
+- name: clone Bedrock repo
+  include: clone_bedrock.yml
+
+- name: compile_bedrock
+  include: compile_bedrock.yml
+
