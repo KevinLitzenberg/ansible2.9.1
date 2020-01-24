@@ -1,0 +1,20 @@
+- apt_repository:
+    repo: ppa:ubuntu-toolchain-r/test
+    state: present
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
+- name: Install C dependencies
+  apt:
+    pkg:
+      - gcc-6 
+      - g++-6
+      - libpcre++-dev
+      - zlib1g-dev
+
+- name: Install Tools.
+  apt:
+   pkg:
+     - mysql-client

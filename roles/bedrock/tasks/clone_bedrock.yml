@@ -1,0 +1,4 @@
+- name: Clone bedrock repo.
+  git:
+    repo: "{{ bedrock_src }}"
+    dest: "{{ bedrock_clone_dir }}" 
