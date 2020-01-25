@@ -1,0 +1,4 @@
+- hosts: "{{ target_host }}"
+  remote_user: "{{ target_user }}"
+  roles:
+    - name: ansible-go

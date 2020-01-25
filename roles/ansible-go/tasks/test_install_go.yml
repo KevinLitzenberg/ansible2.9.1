@@ -1,0 +1,58 @@
+# Verifies the install and outputs results to ansible.
+#- name: Trasfer the script
+#  copy:
+#    src: ./files/update_profile.sh
+#    dest: /root
+#    mode: 0755
+
+#- name: Source bashrc go environment variables
+  #shell: source ~/.profile
+  #shell: sudo -iu {{ ansible_user_id }} source ~/.profile
+  #sudo: no
+  #become_user:  root
+  #shell: source /etc/profile
+  #args: 
+  #  executable:  /bin/bash
+  #script: 
+  #  cmd: /root/./update_profile.sh
+#  command: sh /root/update_profile.sh
+
+- name: add "{{go_path}}" to path
+  lineinfile: 
+    dest: /etc/environment
+    state: present
+    backrefs: yes
+    regexp: 'PATH=(["]*)((?!.*?{{go_path}}).*?)(["]*)$'
+    line: 'PATH=\1\2:{{go_path}}\3'
+
+- name: reset ssh connection
+  meta: reset_connection
+
+
+- name: Verify go install
+  become_user: root
+  command: go version
+  environment: 
+    PATH: "/usr/local/go/bin"
+  register: go_ver
+
+    
+  #args:
+  #  executable: /usr/local/go/bin
+  #register: go_ver
+
+- name: Debug go version
+  debug:
+    var: go_ver
+    verbosity: 0
+
+- name: Verify go environment variables
+  shell: go env
+  environment:
+    PATH: "/usr/local/go/bin"
+  register: go_env
+
+- name: Debug go environment
+  debug:
+    var: go_env
+    verbosity: 0
