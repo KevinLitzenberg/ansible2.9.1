@@ -1,0 +1,7 @@
+---
+# defaults file for ansible-go
+
+go_working_dir: "{{ ansible_env.HOME }}/go"
+go_url: https://dl.google.com/go/go1.11.linux-amd64.tar.gz
+go_src: go1.11.linux-amd64.tar.gz
+go_path: /usr/local/go/bin/go

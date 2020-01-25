@@ -1,0 +1,44 @@
+# Creates the working dir for go
+# Downloads the speicfied package
+# Unarchives package
+# Moves binary into system
+# Updates environment variables for go
+# Uses some nifty REGX to add go to /etc/environment
+
+- name: Create the go working dir
+  file:
+    path: "{{ go_working_dir }}"
+    state: directory
+
+- name: WGET go lang
+  get_url:
+    url: "{{ go_url }}"
+    dest: "{{ go_working_dir }}"
+
+- name: Unpack go lang
+  shell: cd {{ go_working_dir }} && tar -xvf {{ go_src }}
+
+- name: Check if go is already moved
+  stat: 
+    path: /usr/local/go
+  register: go_stat
+
+- name: Move binary to system bin
+  command: mv {{ go_working_dir }}/go /usr/local
+  when: go_stat.stat.exists == False
+
+- name: Copy the environment variables for go to host
+  copy:
+    src: ../files/go_environment.sh
+    dest: /etc/profile.d/go_environment.sh
+    mode: 0644
+    owner: root
+    group: root
+
+- name: Add "{{go_path}}" to path
+  lineinfile:
+    dest: /etc/environment
+    state: present
+    backrefs: yes
+    regexp: 'PATH=(["]*)((?!.*?{{go_path}}).*?)(["]*)$'
+    line: 'PATH=\1\2:{{go_path}}\3'
